@@ -23,7 +23,7 @@ class PriceCalculator
   end
 
   def self.material_rate(material_name = nil)
-    return 0.0 unless material_name
+    return 0.0 if material_name.nil? || material_name.empty?
 
     self::RATES[:material_rates].each do |_key, value|
       return value[:rate] if value[:names].include?(material_name)
@@ -32,7 +32,31 @@ class PriceCalculator
     0.0
   end
 
+  def calculate
+    return base_price if mark_ups.empty?
+
+    (base_price + flat_markup_cost + people_cost + materials_cost).round(3)
+  end
+
   private
+
+  def people_cost
+    number_of_people.to_f * ((self.class.person_rate.to_f * self.base_price.to_f) / 100.0)
+  end
+
+  def flat_markup_cost
+    (self.class.flat_markup.to_f * self.base_price.to_f) / 100.0
+  end
+
+  def materials_cost
+    sum = 0.0
+
+    (self.mark_ups - self.mark_ups.select { |item| item.match /person|people/ }).each do |mark_up|
+      sum += (self.class.material_rate(mark_up.to_s).to_f * self.base_price.to_f) / 100.0
+    end
+
+    sum
+  end
 
   def number_of_people
     people_counts = self.mark_ups.select { |item| item.match /person|people/ }.map(&:to_i).delete_if { |item| item < 0 }
