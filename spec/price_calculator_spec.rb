@@ -34,4 +34,38 @@ describe PriceCalculator do
       end
     end
   end
+
+  describe '.flat_markup' do
+    it 'returns the flat markup rate of 5%' do
+      expect(PriceCalculator.flat_markup).to eq(5)
+    end
+  end
+
+  describe '.person_rate' do
+    it 'returns the each person rate of 1.2%' do
+      expect(PriceCalculator.person_rate).to eq(1.2)
+    end
+  end
+
+  describe '.material_rate' do
+    it 'returns rate of 0% if called with empty material name' do
+      expect(PriceCalculator.material_rate).to eq(0)
+    end
+
+    it 'returns rate of 7.5% if called with material name associated with pharmaceutical' do
+      expect(PriceCalculator.material_rate('drugs')).to eq(7.5)
+    end
+
+    it 'returns rate of 13% if called with material name associated with food' do
+      expect(PriceCalculator.material_rate('food')).to eq(13)
+    end
+
+    it 'returns rate of 2% if called with material name associated with electronics' do
+      expect(PriceCalculator.material_rate('television')).to eq(2)
+    end
+
+    it 'returns rate of 0.0% if called with material name not associated with any type' do
+      expect(PriceCalculator.material_rate('foo')).to eq(0.0)
+    end
+  end
 end
