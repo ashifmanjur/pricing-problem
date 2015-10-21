@@ -14,6 +14,11 @@ class PriceCalculator
     self.mark_ups = mark_ups || []
   end
 
+  def number_of_people
+    people_counts = self.mark_ups.select { |item| item.match /person|people/ }.map(&:to_i).delete_if { |item| item < 0 }
+    people_counts.empty? ? 0 : people_counts.inject(:+)
+  end
+
   def self.flat_markup
     self::RATES[:flat_rate]
   end
@@ -25,7 +30,7 @@ class PriceCalculator
   def self.material_rate(material_name = nil)
     return 0.0 unless material_name
 
-    self::RATES[:material_rates].each do |key, value|
+    self::RATES[:material_rates].each do |_key, value|
       return value[:rate] if value[:names].include?(material_name)
     end
 

@@ -68,4 +68,21 @@ describe PriceCalculator do
       expect(PriceCalculator.material_rate('foo')).to eq(0.0)
     end
   end
+
+  describe '#number_of_people' do
+    it 'returns the total by adding up all the markups related to number of people working' do
+      subject.mark_ups = ['3 people', 'foo', '4 people']
+      expect(subject.number_of_people).to eq(7)
+    end
+
+    it 'returns 0 if no related mark ups are given' do
+      subject.mark_ups = ['3 polution', 'foo', '4 dums']
+      expect(subject.number_of_people).to eq(0)
+    end
+
+    it 'discards if negative values are given' do
+      subject.mark_ups = ['-3 people', 'foo', '4 people']
+      expect(subject.number_of_people).to eq(4)
+    end
+  end
 end
