@@ -33,29 +33,33 @@ class PriceCalculator
   end
 
   def calculate
-    return base_price if mark_ups.empty?
+    return calculated_base_price if mark_ups.empty?
 
-    (base_price + flat_markup_cost + people_cost + materials_cost).round(3)
+    (calculated_base_price + people_cost + materials_cost).round(2)
   end
 
   private
 
+  def calculated_base_price
+    (base_price + flat_markup_cost).round(6)
+  end
+
   def people_cost
-    number_of_people.to_f * ((self.class.person_rate.to_f * self.base_price.to_f) / 100.0)
+    (number_of_people.to_f * ((self.class.person_rate.to_f * calculated_base_price.to_f) / 100.0)).round(6)
   end
 
   def flat_markup_cost
-    (self.class.flat_markup.to_f * self.base_price.to_f) / 100.0
+    ((self.class.flat_markup.to_f * self.base_price.to_f) / 100.0).round(6)
   end
 
   def materials_cost
     sum = 0.0
 
     (self.mark_ups - self.mark_ups.select { |item| item.match /person|people/ }).each do |mark_up|
-      sum += (self.class.material_rate(mark_up.to_s).to_f * self.base_price.to_f) / 100.0
+      sum += (self.class.material_rate(mark_up.to_s).to_f * calculated_base_price.to_f) / 100.0
     end
 
-    sum
+    sum.round(6)
   end
 
   def number_of_people

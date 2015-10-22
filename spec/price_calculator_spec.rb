@@ -89,7 +89,7 @@ describe PriceCalculator do
   describe '#people_cost' do
     it 'returns the total cost by people working on the job' do
       price_calculator = PriceCalculator.new(12456.95, ['4 people', 'books'])
-      expect(price_calculator.send(:people_cost)).to eq(597.9336)
+      expect(price_calculator.send(:people_cost)).to eq(627.830280)
     end
 
     it 'returns 0 as total cost by people working on the job if no valid mark up is given' do
@@ -101,7 +101,7 @@ describe PriceCalculator do
   describe '#flat_markup_cost' do
     it 'returns the total flat mark up cost' do
       price_calculator = PriceCalculator.new(12456.95, ['4 people', 'books'])
-      expect(price_calculator.send(:flat_markup_cost)).to eq(622.8475)
+      expect(price_calculator.send(:flat_markup_cost)).to eq(622.847500)
     end
 
     it 'returns o as the total flat mark up cost if no base price is given' do
@@ -112,7 +112,7 @@ describe PriceCalculator do
   describe '#materials_cost' do
     it 'returns the total materials mark up cost' do
       price_calculator = PriceCalculator.new(12456.95, ['4 people', 'drugs'])
-      expect(price_calculator.send(:materials_cost)).to eq(934.27125)
+      expect(price_calculator.send(:materials_cost)).to eq(980.984813)
     end
 
     it 'returns o as the total materials mark up cost if no chargeable material is given' do
@@ -121,29 +121,41 @@ describe PriceCalculator do
     end
   end
 
+  describe '#calculated_base_price' do
+    it 'returns the total materials mark up cost' do
+      subject.base_price = 12456.95
+      expect(subject.send(:calculated_base_price)).to eq(13079.797500)
+    end
+  end
+
   describe '#calculate' do
     it 'responds to calculate method' do
       expect(subject).to respond_to(:calculate)
     end
 
-    it 'returns the base price if no other markups are assigned' do
+    it 'returns the base price with flat markup if no other markups are assigned' do
       subject.base_price = 2300.00
-      expect(subject.calculate).to eq(2300.0)
+      expect(subject.calculate).to eq(2415.00)
     end
 
     it 'adds up people charges of 1.2% on top of base price with flat charges' do
       price_calculator = PriceCalculator.new(1000.00, ['2 people'])
-      expect(price_calculator.calculate).to eq(1074.0)
+      expect(price_calculator.calculate).to eq(1075.20)
     end
 
     it 'adds up people charges of 1.2% on top of base price with flat charges plus pharmaceutical material rate' do
       price_calculator = PriceCalculator.new(5432.00, ['1 person', 'drugs'])
-      expect(price_calculator.calculate).to eq(6176.184)
+      expect(price_calculator.calculate).to eq(6199.81)
+    end
+
+    it 'adds up people charges of 13% on top of base price with flat charges plus food material rate' do
+      price_calculator = PriceCalculator.new(1299.99, ['3 person', 'food'])
+      expect(price_calculator.calculate).to eq(1591.58)
     end
 
     it 'adds up people charges of 1.2% on top of base price with flat charges and no rate if unknown material is used' do
       price_calculator = PriceCalculator.new(12456.95, ['4 people', 'books'])
-      expect(price_calculator.calculate).to eq(13677.731)
+      expect(price_calculator.calculate).to eq(13707.63)
     end
   end
 end
